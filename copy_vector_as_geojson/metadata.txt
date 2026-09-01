@@ -1,0 +1,13 @@
+[general]
+name=Copy Vector as GeoJSON
+description=Copy a vector layer or its selected features as GeoJSON from the Layers panel context menu.
+version=1.1.0
+qgisMinimumVersion=3.22
+author=Hemed Lungo
+email=
+about=Adds Copy as GeoJSON and Copy BBOX to the vector-layer right-click menu and provides a Processing Toolbox algorithm. Output is transformed to EPSG:4326 and copied to the system clipboard.
+category=Vector
+tags=geojson,clipboard,copy,vector,processing
+experimental=False
+deprecated=False
+hasProcessingProvider=yes
