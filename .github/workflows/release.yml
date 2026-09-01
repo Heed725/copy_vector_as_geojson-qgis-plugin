@@ -1,0 +1,48 @@
+name: Publish QGIS Plugin Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag"
+        required: true
+        default: "v1.0.0"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create release and upload plugin ZIP
+    runs-on: ubuntu-latest
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG_NAME: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate plugin ZIP
+        run: |
+          test -f copy_vector_as_geojson.zip
+          unzip -t copy_vector_as_geojson.zip
+
+      - name: Create GitHub release if needed
+        run: |
+          if ! gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            gh release create "$TAG_NAME" \
+              --target "$GITHUB_SHA" \
+              --title "Copy Vector as GeoJSON ${TAG_NAME}" \
+              --notes-file RELEASE_NOTES.md
+          fi
+
+      - name: Upload installable ZIP
+        run: |
+          gh release upload "$TAG_NAME" \
+            copy_vector_as_geojson.zip \
+            --clobber
